@@ -16,7 +16,7 @@ import os
 import os.path as osp
 from deeplab.model import ResNetUpsampled_Deeplab
 from deeplab.loss import CrossEntropy2d
-from deeplab.datasets import DavisSet, DavisSetTest, DavisSiameseSet, DavisSiameseMAMLSet
+from deeplab.datasets import DavisSiameseMAMLSet
 import matplotlib.pyplot as plt
 import random
 from PIL import Image
@@ -59,10 +59,10 @@ start = timeit.default_timer()
 IMG_MEAN = np.array((104.00698793, 116.66876762, 122.67891434), dtype=np.float32)
 
 BATCH_SIZE = 1
-DATA_DIRECTORY = '../davis-2017/data/DAVIS'
+DATA_DIRECTORY = 'DAVIS'
 VERSION = '2017'
 SPLIT = 'val'
-DATA_LIST_PATH = '../davis-2017/data/DAVIS/ImageSets/2017/{}_videos_{}.txt'.format(SPLIT, VERSION)
+DATA_LIST_PATH = 'dataset/{}_videos_{}.txt'.format(SPLIT, VERSION)
 IGNORE_LABEL = 255
 INPUT_SIZE = '240,427'
 LEARNING_RATE = 2.5e-6
@@ -903,138 +903,6 @@ def main():
     end = timeit.default_timer()
     print(end - start, 'seconds')
     fin.close()
-
-
-def predict_state(idx, state):
-    state[idx] = state[idx - 1]
-    return state
-
-
-def update_state(idx, state, output1):
-    bbox = gen_bbox_new(output1, range(instance_num), True)
-    for i in range(instance_num):
-        state[idx][i] = [(bbox[i, 0] + bbox[i, 2]) / 2, (bbox[i, 1] + bbox[i, 3]) / 2, 0, 0, bbox[i, 2] - bbox[i, 0],
-                         bbox[i, 3] - bbox[i, 1]]
-    return state, bbox
-
-
-def update_output(idx, state, output1, prev_output):
-    bbox = np.zeros((instance_num, 4), int)
-    for i in range(instance_num):
-        bbox[i, :] = [int(state[idx][i][0] - state[idx][i][4] / 2), int(state[idx][i][1] - state[idx][i][5] / 2),
-                      int(state[idx][i][0] + state[idx][i][4] / 2), int(state[idx][i][1] + state[idx][i][5] / 2)]
-    print(bbox[0, 0])
-    output1 = combine(output1, prev_output, bbox, idx)
-    return output1, bbox
-
-
-def predict_frame(th, step, instance_list, frame_fr_dir):
-    global pred_prob, frames
-    bbox = []
-
-    ########### GET WARPED PROBABILITIES
-    tempoo = combine_prob(pred_prob[th - 1])
-    if (step == 1):
-        warp_prob = flo.get_warp_label(flow1, flow2, tempoo)  # returns flow guided warp
-    elif (step == -1):
-        warp_prob = flo.get_warp_label(flow2[th + 1], flow1[th], combine_prob(pred_prob[th + 1]))
-
-    result = prob_to_label(warp_prob)
-    bbox = gen_bbox(result, range(instance_num), True)  # return bounding box coordinates for each object
-    new_instance_list = []
-    abort = True
-
-    temp = prob_to_label(tempoo)
-    temp_image = frames
-
-    # pred_prob[th] = label_to_prob(result, instance_num)
-
-
-    if FOR_BAC:
-
-        ############ ONLY ADD TO NEW_INSTANCE_LIST IF IT IS NOT VERY SMALL, i.e present in that frame
-        for i in range(instance_num):
-            if np.count_nonzero(orig_mask[i]) <= np.count_nonzero(temp == (i + 1)) * 10:
-                if i in instance_list:
-                    abort = False
-                    new_instance_list.append(i)
-                else:
-                    for j in instance_list:
-                        if IoU(bbox[i, :], bbox[j, :]) > 1e-6:
-                            new_instance_list.append(i)
-                            break
-        if abort:
-            return
-
-        new_instance_list = sorted(new_instance_list)
-        fr_h_r = float(frames.shape[0]) / float(frame_0.shape[0])
-        fr_w_r = float(frames.shape[1]) / float(frame_0.shape[1])
-
-        #############################################
-        ########## GET THE RESPECTIVE PATCHES
-        f_prob = [np.zeros([bbox[idx, 3] - bbox[idx, 1], bbox[idx, 2] - bbox[idx, 0], 2]) for idx in new_instance_list]
-        image_patch = np.zeros((len(new_instance_list), patch_shape[1], patch_shape[0], 3), float)
-        flow_patch = np.zeros((len(new_instance_list), patch_shape[1], patch_shape[0], 2), float)
-        warp_label_patch = np.zeros((len(new_instance_list), patch_shape[1], patch_shape[0], 1), float)
-
-        for i in range(len(new_instance_list)):
-            idx = new_instance_list[i]
-            warp_label_patch[i, ..., 0] = cv2.resize(
-                warp_prob[bbox[idx, 1]:bbox[idx, 3], bbox[idx, 0]:bbox[idx, 2], idx + 1], patch_shape).astype(float)
-            image_patch[i, ...] = cv2.resize(
-                temp_image[int(0.5 + bbox[idx, 1] * fr_h_r):int(0.5 + bbox[idx, 3] * fr_h_r),
-                int(0.5 + bbox[idx, 0] * fr_w_r):int(0.5 + bbox[idx, 2] * fr_w_r), :], patch_shape).astype(float)
-            if (step == 1):
-                flow_patch[i, ...] = cv2.resize(flow2[bbox[idx, 1]:bbox[idx, 3], bbox[idx, 0]:bbox[idx, 2], :],
-                                                patch_shape).astype(float)
-            else:
-                flow_patch[i, ...] = cv2.resize(flow1[th][bbox[idx, 1]:bbox[idx, 3], bbox[idx, 0]:bbox[idx, 2], :],
-                                                patch_shape).astype(float)
-
-        image_patch = torch.from_numpy(image_patch.transpose(0, 3, 1, 2)).contiguous().float().to(
-            torch.device('cuda:{}'.format(1)))
-        warp_label_patch = torch.from_numpy(warp_label_patch.transpose(0, 3, 1, 2)).contiguous().float().to(
-            torch.device('cuda:{}'.format(1)))
-        flow_patch = torch.from_numpy(flow_patch.transpose(0, 3, 1, 2)).contiguous().float().to(
-            torch.device('cuda:{}'.format(1)))
-        #############################################
-
-
-        #############################################
-        ######### PASS PATCHES INTO THE MODEL
-        with torch.no_grad():
-            prob = model_prop(image_patch, flow_patch, warp_label_patch)  # mask propgation model
-            prob = torch.nn.functional.softmax(prob, dim=1)
-        #############################################
-
-        if use_flip:
-            image_patch = flip(image_patch, 3)
-            warp_label_patch = flip(warp_label_patch, 3)
-            flow_patch = flip(flow_patch, 3)
-            flow_patch[:, 0, ...] = -flow_patch[:, 0, ...]
-            with torch.no_grad():
-                prob_f = model_prop(image_patch, flow_patch, warp_label_patch)
-                prob_f = torch.nn.functional.softmax(prob_f, dim=1)
-            prob_f = flip(prob_f, 3)
-            prob = (prob + prob_f) / 2.0
-
-        prob = prob.data.cpu().numpy().transpose(0, 2, 3, 1)
-
-        for i in range(len(new_instance_list)):
-            idx = new_instance_list[i]
-            f_prob[i] += cv2.resize(prob[i, ...], (bbox[idx, 2] - bbox[idx, 0], bbox[idx, 3] - bbox[idx, 1]))
-
-        ########## FILL INTO PRED_PROB
-        for i in range(len(new_instance_list)):
-            idx = new_instance_list[i]
-            pred_prob[th][..., idx * 2] = 1
-            pred_prob[th][..., idx * 2 + 1] = 0
-            pred_prob[th][bbox[idx, 1]:bbox[idx, 3], bbox[idx, 0]:bbox[idx, 2], idx * 2] = f_prob[i][..., 0]
-            pred_prob[th][bbox[idx, 1]:bbox[idx, 3], bbox[idx, 0]:bbox[idx, 2], idx * 2 + 1] = f_prob[i][..., 1]
-
-        save_frame(bbox, th, False, 'draft', True
-)
-    return bbox, result
 
 
 def save_frame(bbox, th, do_pause, dir_name='', vis=True):
