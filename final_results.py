@@ -297,8 +297,6 @@ def main():
         support_x, support_y, query_x, query_y, name = batch
         # if name[0] not in ['dogs-jump','dog','cows','camel']:#''dog', 'dogs-jump', 'drift-chicane', 'drift-straight', 'soapbox']:
         #     continue
-        if name[0] not in ['soapbox', 'paragliding-launch', 'shooting', 'horsejump-high', 'libby']:#''dog', 'dogs-jump', 'drift-chicane', 'drift-straight', 'soapbox']:
-            continue
         nFrames = len(query_x)
 
         #########################################################
