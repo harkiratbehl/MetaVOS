@@ -91,7 +91,7 @@ MEASURE = 1
 TRACK_BASIC = 0
 ###########################################################################################
 PROTOTYPICAL_SINGLE_MODE = False  # If False, then it uses NUMBER_OF_CLUSTERS modes
-number_of_clusters = 1
+number_of_clusters = 50
 NUMBER_OF_CLUSTERS_train = 10
 BG_Factor = 4
 
@@ -319,30 +319,6 @@ def main():
         supp_label = supp_label.long()
         cls1 = np.unique(supp_label[supp_label >= 0].numpy())
         instance_num = cls1.max()
-        #########################################################
-
-
-        #########################################################
-        if TRACKING or TRACK_BASIC:
-            ############### TRACKING PART
-            frame_dir = os.path.join(dataset_dir, 'JPEGImages', resolution, name[0])
-            frame_fr_dir = os.path.join(dataset_dir, 'JPEGImages', 'Full-Resolution', name[0])
-            flow_dir = os.path.join(dataset_dir, 'Flows', resolution, name[0])
-            label_dir_new = os.path.join(dataset_dir, 'Annotations_l', resolution, name[0])
-            supp_label1 = cv2.imread(os.path.join(label_dir_new, '%05d.png' % 0), cv2.IMREAD_UNCHANGED)
-            frame_0 = cv2.imread(os.path.join(frame_dir, '%05d.jpg' % 0))
-            bbox = gen_bbox(supp_label1, range(instance_num), False)
-            # category = category_all[name[0]]  # has 3 elements if 3 instances
-            # person_reid = [None for _ in range(instance_num)]
-            # object_reid = [None for _ in range(instance_num)]
-            orig_mask = [None for _ in range(instance_num)]
-            pred_prob = [None for _ in range(nFrames)]
-            pred_prob[0] = label_to_prob(supp_label1, instance_num)
-            state = [np.zeros((instance_num, 6), int) for _ in range(nFrames)]
-            for i in range(instance_num):
-                orig_mask[i] = pred_prob[0][bbox[i, 1]:bbox[i, 3], bbox[i, 0]:bbox[i, 2], i * 2 + 1]
-                state[0][i] = [(bbox[i, 0] + bbox[i, 2]) / 2, (bbox[i, 1] + bbox[i, 3]) / 2, 0, 0,
-                               bbox[i, 2] - bbox[i, 0], bbox[i, 3] - bbox[i, 1]]
         #########################################################
 
 
@@ -624,24 +600,6 @@ def main():
 
                 query_image = torch.from_numpy(query_image)
                 embeddings = model(query_image.to(device))
-
-                #########################################################
-                if TRACKING:
-                    ############### TRACKING PART
-                    # person_reid = person_all[frame_cnt + idx]
-                    # object_reid = object_all[frame_cnt + idx]
-                    # for i in range(instance_num):
-                    #     person_reid[i] = person_reid[i][:, [0, 1, 2, 3, 5]]
-                    #     object_reid[i] = object_reid[i][:, [0, 1, 2, 3, 5]]
-                    if idx != 0:
-                        flow1 = flo.readFlow(os.path.join(flow_dir, '%05d.flo' % (idx - 1)))
-                        flow2 = flo.readFlow(os.path.join(flow_dir, '%05d.rflo' % (idx)))
-                        pred_prob[idx] = label_to_prob(np.zeros_like(supp_label1, np.uint8),
-                                                       instance_num)  # just initiates all probabilities to 0
-                        frames = cv2.imread(os.path.join(frame_fr_dir, '%05d.jpg' % idx)).astype(float)
-                        if WARP or FOR_BAC:
-                            bbox, warp_label = predict_frame(idx, 1, range(instance_num), frame_fr_dir)
-                #########################################################
 
                 ##########################################
                 ### Prototypical networks, using multiple modes/clusters to represent parts of each instance (inc. bg)

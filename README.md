@@ -1,15 +1,17 @@
 # MetaVOS
 Official code for the paper titled "Meta Learning Deep Visual Words for Fast Video Object Segmentation"
-If you use this code, please cite this (https://arxiv.org/abs/1812.01397):
+If you use this code, please cite this [Meta Learning Deep Visual Words for Fast Video Object Segmentation](https://arxiv.org/abs/1812.01397):
 
-@article{DBLP:journals/corr/abs-1812-01397,
-  author    = {Harkirat Singh Behl and
-               Mohammad Najafi and
-               Philip H. S. Torr},
-  title     = {Meta Learning Deep Visual Words for Fast Video Object Segmentation},
-  journal   = {CoRR},
-  year      = {2018}
-}
+
+	@article{DBLP:journals/corr/abs-1812-01397,
+	  author    = {Harkirat Singh Behl and
+	               Mohammad Najafi and
+	               Philip H. S. Torr},
+	  title     = {Meta Learning Deep Visual Words for Fast Video Object Segmentation},
+	  journal   = {CoRR},
+	  year      = {2018}
+	}
+
 
 ## Pre Requisites
 
