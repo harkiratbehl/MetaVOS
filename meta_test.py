@@ -76,7 +76,7 @@ MEASURE = 1
 TRACK_BASIC = 0
 ###########################################################################################
 PROTOTYPICAL_SINGLE_MODE = False  # If False, then it uses NUMBER_OF_CLUSTERS modes
-number_of_clusters = 200
+number_of_clusters = 50
 NUMBER_OF_CLUSTERS_train = 10
 BG_Factor = 4
 
@@ -188,7 +188,7 @@ def main():
     # np.random.shuffle(copy_as)
     # colors[1:] = copy_as
     """Create the model and start the training."""
-    SEED = 136
+    SEED = 5
     torch.manual_seed(SEED)
     torch.cuda.manual_seed_all(SEED)
     np.random.seed(SEED)
