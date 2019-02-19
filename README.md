@@ -26,7 +26,7 @@ Download the DAVIS-17 Train and Val dataset from [link](https://data.vision.ee.e
 After downloading the dataset, extract it within the 'metavos' directory.
 
 **For your own dataset**
-
+You will need to define a new class for the dataloader for the dataset. Please refer to the class 'DavisSiameseMAMLSet' in file 'deeplab/dataset.py'.
 
 ### STEP-3 Downloading the trained Model
 The trained model for DAVIS-17 can be downloaded from [link](https://unioxfordnexus-my.sharepoint.com/:u:/r/personal/engs1635_ox_ac_uk/Documents/research/segmentation/metavos_data/DAVIS_2017_prototypical_MODES_train_max_109000.pth?csf=1&e=VvEG1G).
@@ -35,9 +35,15 @@ After downloading the weights, please put it in the 'snapshots' folder
 
 
 ## TESTING
-Run the file 'main.py'
+Run the file 'meta_test.py'
 
-	python main..py
+	python meta_test.py
 
+To visualize the segmentation, make the flag 'DISPLAY = 1' in file 'meta_test.py'
 
 ## TRAINING
+For Training, we start from the Pascal pretraining weights. First download the Pascal weights from [link](https://unioxfordnexus-my.sharepoint.com/:u:/g/personal/engs1635_ox_ac_uk/EYo-EwbiSZ5HsVf4dwd-92cBdLD9h1hJ5yTP-hs4UJ65bw?e=8N0I5I) and store them in the 'snapshots' folder.
+
+Run the file 'meta_train.py'
+
+	python meta_train.py

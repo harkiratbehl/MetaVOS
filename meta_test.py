@@ -34,22 +34,6 @@ import gc
 from label_transfer import apply_crf
 from sklearn.cluster import MiniBatchKMeans
 
-###############################
-#### TRACKING PART
-# sys.path.append('reidnew')
-# from pytorch-deeplab.reidnew.core import models
-# from reidnew.core.utils import flow as flo
-# from reidnew.core.utils.disp import labelcolormap
-# from reidnew.core.utils.config import Config
-# from reidnew.core.utils.bbox import gen_bbox, label_to_prob, combine_prob, prob_to_label, IoU
-# from reidnew.core.utils.pickle_io import pickle_dump, pickle_load
-# from reidnew.davis_test import flip
-
-# patch_shape = (449, 449)
-# use_flip = True
-# colors = labelcolormap(500)
-###############################
-
 from disp import labelcolormap
 from bbox import gen_bbox, label_to_prob, combine_prob, prob_to_label, IoU
 colors = labelcolormap(500)
@@ -607,7 +591,10 @@ def main():
                 #############################################################################################
 
 
-
+                if os.path.isdir('output_probs_{}'.format(VERSION)) != True:
+                    os.mkdir('output_probs_{}'.format(VERSION))
+                if os.path.isdir('output_images_{}'.format(VERSION)) != True:
+                    os.mkdir('output_images_{}'.format(VERSION))
                 if os.path.isdir('output_probs_{}/{}'.format(VERSION, name[0])) != True:
                     os.mkdir('output_probs_{}/{}'.format(VERSION, name[0]))
                 np.save('output_probs_{}/{}/{:05}.npy'.format(VERSION, name[0], idx), output_probs.astype(np.float16))
