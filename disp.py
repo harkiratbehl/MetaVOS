@@ -1,3 +1,7 @@
+#######################################################################
+# This file has been borrowed from https://github.com/lxx1991/VS-ReID
+#######################################################################
+
 import os
 import cv2
 import numpy as np
