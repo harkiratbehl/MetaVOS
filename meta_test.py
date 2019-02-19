@@ -22,20 +22,21 @@ import random
 from PIL import Image
 import pdb
 import timeit
-from get_params import *
-from loss_func import binary_cross_entropy2d, cross_entropy2d
-from label_transfer import label_transfer
+
 from datetime import datetime
-from utils import read_image_label, imwrite_indexed, read_image_only, gen_bbox_new
 from tqdm import tqdm
 from deeplab.clustering import clustering, clustering_morph
 import copy
 import gc
-from label_transfer import apply_crf
 from sklearn.cluster import MiniBatchKMeans
 
-from disp import labelcolormap
-from bbox import gen_bbox, label_to_prob, combine_prob, prob_to_label, IoU
+from src.disp import labelcolormap
+from src.bbox import gen_bbox, label_to_prob, combine_prob, prob_to_label, IoU
+from src.get_params import *
+from src.loss_func import binary_cross_entropy2d, cross_entropy2d
+from src.label_transfer import label_transfer, apply_crf
+from src.utils import read_image_label, imwrite_indexed, read_image_only, gen_bbox_new
+
 colors = labelcolormap(500)
 
 start = timeit.default_timer()
@@ -817,39 +818,67 @@ def show_frame_new(supp_image, result, th, bbox):
 
 def show_clusters(name, output_cluster_labels_n, supp_image, result, th, bbox):
 
-    read_file = os.path.join('output_images_2017_64', str(name[0]), '%05d.png' % th)
-    im = Image.open(read_file)
+    # read_file = os.path.join('output_images_2017_64', str(name[0]), '%05d.png' % th)
+    # im = Image.open(read_file)
 
-    annotation = np.atleast_3d(im)[...,0]
-    aph = np.array(im.getpalette()).reshape((-1,3))
-    #result = cv2.imread(read_file)
-    result=annotation
+    # annotation = np.atleast_3d(im)[...,0]
+    # aph = np.array(im.getpalette()).reshape((-1,3))
+    # #result = cv2.imread(read_file)
+    # result=annotation
+
+    # indic = result > 0
+    # result_show1 = np.dstack((colors[result, 0], colors[result, 1], colors[result, 2])).astype(np.uint8)
+    # #result_show = np.dstack((colors[output_cluster_labels_n, 0], colors[output_cluster_labels_n, 1],colors[output_cluster_labels_n, 2])).astype(np.uint8)
+
+    # # supp_image_mod = supp_image
+    # # supp_image_mod[indic] = supp_image_mod[indic]*0.3
+    # # temp1 = supp_image_mod + result_show1 * 0.7
+
+    # temp1 = supp_image * 0.3 + result_show1 * 0.7
+
+    # # for i in range(instance_num):
+    # #     temp = cv2.rectangle(temp, (bbox[i, 0], bbox[i, 1]), (bbox[i, 2], bbox[i, 3]), (0, 255, 0), 5)
+    # #showim = np.concatenate((supp_image, temp, temp1), axis=1)
+    # dest_dir = 'output_images_val/' + str(name[0])
+    # if os.path.isdir(dest_dir) != True:
+    #                 os.mkdir(dest_dir)
+    # dest = os.path.join(dest_dir, '%05d.png' % th)
+    # cv2.imwrite(dest, temp1)
+    # # dest1 = dest_dir + '/' +  str(th) + 'o.jpg'
+    # # cv2.imwrite(dest1, temp1)
+    # # cv2.imshow('result', result.astype(np.uint8))
+    # # # cv2.waitKey(25)
+    # # k = cv2.waitKey(0)
+    # # if k == ord('a'):    # Esc key to stop
+    #     return
 
     indic = result > 0
     result_show1 = np.dstack((colors[result, 0], colors[result, 1], colors[result, 2])).astype(np.uint8)
-    #result_show = np.dstack((colors[output_cluster_labels_n, 0], colors[output_cluster_labels_n, 1],colors[output_cluster_labels_n, 2])).astype(np.uint8)
+    result_show = np.dstack((colors[output_cluster_labels_n, 0], colors[output_cluster_labels_n, 1],
+                             colors[output_cluster_labels_n, 2])).astype(np.uint8)
 
-    # supp_image_mod = supp_image
-    # supp_image_mod[indic] = supp_image_mod[indic]*0.3
-    # temp1 = supp_image_mod + result_show1 * 0.7
+    supp_image_mod = supp_image.copy()
+    supp_image_mod[indic] = supp_image_mod[indic]*0.3
 
-    temp1 = supp_image * 0.3 + result_show1 * 0.7
-
+    temp = supp_image_mod + result_show * 0.7
+    temp1 = supp_image_mod + result_show1 * 0.7
     # for i in range(instance_num):
     #     temp = cv2.rectangle(temp, (bbox[i, 0], bbox[i, 1]), (bbox[i, 2], bbox[i, 3]), (0, 255, 0), 5)
-    #showim = np.concatenate((supp_image, temp, temp1), axis=1)
-    dest_dir = 'output_images_val/' + str(name[0])
-    if os.path.isdir(dest_dir) != True:
-                    os.mkdir(dest_dir)
-    dest = os.path.join(dest_dir, '%05d.png' % th)
-    cv2.imwrite(dest, temp1)
-    # dest1 = dest_dir + '/' +  str(th) + 'o.jpg'
-    # cv2.imwrite(dest1, temp1)
-    # cv2.imshow('result', result.astype(np.uint8))
-    # # cv2.waitKey(25)
+    showim = np.concatenate((supp_image, temp, temp1), axis=1)
+    cv2.imshow('result', showim.astype(np.uint8))
+    cv2.waitKey(25)
+
+
+    # dest_dir = 'figures/' + str(th) + '.jpg'
+    # cv2.imwrite(os.path.join('figures', '%05d.jpg' % (th)), showim)
     # k = cv2.waitKey(0)
     # if k == ord('a'):    # Esc key to stop
     #     return
+
+    # plt.imshow(showim.astype(np.uint8))
+    # plt.show()
+    
+
 
 
 def combine(output, warp_label, bbox, th):
