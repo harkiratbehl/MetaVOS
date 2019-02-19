@@ -16,6 +16,7 @@ If you use this code, please cite this [Meta Learning Deep Visual Words for Fast
 ## Pre Requisites
 
 ### STEP-1 Installing required libraries
+Pytorch version 0.4.1 is used with Python 2.7 using Anaconda2. The different libraries needed and the commands needed to install them are given in the file 'environment_setup.txt'
 
 
 ### STEP-2 Downloading and preparing the dataset

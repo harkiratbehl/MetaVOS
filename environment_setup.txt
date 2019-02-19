@@ -1,0 +1,79 @@
+Guide for setting up the Conda environment for MetaVOS. 
+## This is a brief how-to set up conda and basic libraries on your computer. 
+
+# indicates a comment. 
+
+## INSTALL CONDA
+##
+## go to https://conda.io/miniconda.html
+Select the right Python 2.7 version appropriate to your machine (e.g Windows/Mac/Linux)
+ 
+
+## windows:
+## install the .exe
+## Once installed on the "start" menu open the "anaconda prompt"
+
+## linux and mac:
+bash Miniconda2-*.sh
+
+       # To know more about conda:
+        #   https://conda.io/docs/user-guide/tasks/manage-environments.html
+
+## to see your environments 
+conda env list 
+
+## remove an environment:
+conda remove --name FAILED_ENVIRONMENT --all
+
+## you should have just the base environment present at this point
+## it is best not to use the base environment to install packages, rather you should make new environments for each major activity and install the required packages locally in order that you can delete a failed environment. 
+
+#####
+## create a new conda environment for using MetaVOS:
+conda create --name metavos python=2.7
+
+## activate the environment you just created:
+conda activate metavos
+
+## when you are finished in an environment you can leave by 
+conda deactivate metavos 
+
+## Install packages needed for the MetaVOS repo inside the environment! Conda will sort out all the dependencies.
+
+## If asked to give permission to install files - say yes. 
+
+## install scipy and numpy for linear algebra libraries
+conda install scipy numpy 
+
+## install pytorch and torchvision. 
+conda install pytorch=0.4.1 torchvision cudatoolkit=8.0 -c pytorch
+
+## install opencv
+conda install opencv 
+
+## install matplotlib
+conda install -c conda-forge matplotlib 
+
+## install PIL
+conda install -c anaconda pil 
+
+## install sklearn
+conda install -c anaconda scikit-learn 
+
+## install pydensecrf
+conda install -c conda-forge pydensecrf 
+
+## install time
+conda install -c conda-forge time 
+
+## install sklearn
+conda install -c anaconda scikit-learn
+
+## install tqdm
+conda install -c conda-forge tqdm 
+
+## install datetime
+conda install -c trentonoliphant datetime 
+
+## install chainercv
+# Follow this link: https://chainercv.readthedocs.io/en/stable/install.html
