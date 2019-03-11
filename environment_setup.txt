@@ -66,8 +66,8 @@ conda install -c conda-forge pydensecrf
 ## install time
 conda install -c conda-forge time 
 
-## install sklearn
-conda install -c anaconda scikit-learn
+## install scikit-image
+conda install -c conda-forge scikit-image
 
 ## install tqdm
 conda install -c conda-forge tqdm 
