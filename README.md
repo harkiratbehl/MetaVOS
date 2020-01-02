@@ -9,7 +9,7 @@ If you use this code, please cite this [Meta Learning Deep Visual Words for Fast
 		       Anurag Arnab and
 	               Philip H. S. Torr},
 	  title     = {Meta Learning Deep Visual Words for Fast Video Object Segmentation},
-	  booktitle   = {Machine Learning for Autonomous Driving Workshop, 33rd Conference on Neural Information Processing Systems (NeurIPS 2019), Vancouver, Canada},
+	  booktitle   = {NeurIPS 2019 Workshop on Machine Learning for Autonomous Driving},
 	  year      = {2018}
 	}
 
