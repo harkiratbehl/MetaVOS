@@ -3,12 +3,13 @@ Official code for the paper titled "Meta Learning Deep Visual Words for Fast Vid
 If you use this code, please cite this [Meta Learning Deep Visual Words for Fast Video Object Segmentation](https://arxiv.org/abs/1812.01397):
 
 
-	@article{DBLP:journals/corr/abs-1812-01397,
+	@inproceedings{DBLP:journals/corr/abs-1812-01397,
 	  author    = {Harkirat Singh Behl and
 	               Mohammad Najafi and
+		       Anurag Arnab and
 	               Philip H. S. Torr},
 	  title     = {Meta Learning Deep Visual Words for Fast Video Object Segmentation},
-	  journal   = {CoRR},
+	  booktitle   = {Machine Learning for Autonomous Driving Workshop, 33rd Conference on Neural Information Processing Systems (NeurIPS 2019), Vancouver, Canada},
 	  year      = {2018}
 	}
 
