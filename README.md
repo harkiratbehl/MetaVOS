@@ -30,7 +30,7 @@ After downloading the dataset, extract it within the 'metavos' directory.
 You will need to define a new class for the dataloader for the dataset. Please refer to the class 'DavisSiameseMAMLSet' in file 'deeplab/dataset.py'.
 
 ### STEP-3 Downloading the trained Model
-The trained model for DAVIS-17 can be downloaded from [link](https://unioxfordnexus-my.sharepoint.com/:u:/r/personal/engs1635_ox_ac_uk/Documents/research/segmentation/metavos_data/DAVIS_2017_prototypical_MODES_train_max_109000.pth?csf=1&e=VvEG1G).
+The trained model for DAVIS-17 can be downloaded from [link](https://drive.google.com/file/d/1FuY6mXi1_odoMALZrc5UKUaWV0ZI0E09/view?usp=sharing).
 
 After downloading the weights, please put it in the 'snapshots' folder
 
